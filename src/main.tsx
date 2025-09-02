@@ -9,14 +9,18 @@ const queryClient = new QueryClient();
 
 async function enableMocking() {
   const { worker } = await import("./mocks/browser");
-  return worker.start();
+  return worker.start({
+  serviceWorker: {
+    url: '/react-modular-app/mockServiceWorker.js',
+  },
+});
 }
 
 enableMocking().then(() => {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <BrowserRouter basename="/react-modular-app">
           <AppRoutes />
         </BrowserRouter>
       </QueryClientProvider>

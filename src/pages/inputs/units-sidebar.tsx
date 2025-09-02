@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Calendar, Home, Inbox } from "lucide-react";
 
 import {
   Sidebar,
@@ -11,36 +11,28 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useSearchParams } from "react-router";
 
 const items = [
   {
     title: "Reactor",
-    url: "?reactor",
+    value: "reactor",
     icon: Home,
   },
   {
-    title: "Cooling towers",
-    url: "#",
+    title: "Cooling Towers",
+    value: "cooling_towers",
     icon: Inbox,
   },
   {
-    title: "Calendar",
-    url: "#",
+    title: "Compilance Points",
+    value: "compilance_points",
     icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
   },
 ];
 
 export default function UnitsSidebar() {
+  const [_, setSearchParams] = useSearchParams();
   return (
     <Sidebar collapsible="icon">
       <SidebarInset className="top-0 sm:top-18">
@@ -51,11 +43,11 @@ export default function UnitsSidebar() {
               <SidebarMenu>
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
+                    <SidebarMenuButton
+                      onClick={() => setSearchParams({ unit: item.value })}
+                    >
+                      <item.icon />
+                      <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

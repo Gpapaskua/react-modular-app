@@ -66,6 +66,8 @@ describe("ParamsTable", () => {
     { id: "2", name: "TOC", value: 15.5, units: "mg/L" },
   ];
 
+  const mockGroupId = "group1";
+
   const mockOnUpdateParam = vi.fn();
   const mockOnAddNewParam = vi.fn();
 
@@ -77,6 +79,7 @@ describe("ParamsTable", () => {
   it("should render the DataTable with the correct data", () => {
     render(
       <ParamsTable
+        groupId={mockGroupId}
         data={mockData}
         onUpdateParam={mockOnUpdateParam}
         onAddNewParam={mockOnAddNewParam}
@@ -93,6 +96,7 @@ describe("ParamsTable", () => {
   it('should render the footer with the "Add" button', () => {
     render(
       <ParamsTable
+        groupId={mockGroupId}
         data={mockData}
         onUpdateParam={mockOnUpdateParam}
         onAddNewParam={mockOnAddNewParam}
@@ -112,6 +116,7 @@ describe("ParamsTable", () => {
   it("should call onAddNewParam when the add button is clicked", () => {
     render(
       <ParamsTable
+        groupId={mockGroupId}
         data={mockData}
         onUpdateParam={mockOnUpdateParam}
         onAddNewParam={mockOnAddNewParam}

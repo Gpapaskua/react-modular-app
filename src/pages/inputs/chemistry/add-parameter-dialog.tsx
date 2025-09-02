@@ -65,7 +65,6 @@ const AddParameterDialog = ({ onClose, groupId, ...rest }: Props) => {
   });
 
   const onSave = ({ param }: { param: string }) => {
-    console.log('SUBMITED')
     addNewParam({
       groupId,
       paramId: param,

@@ -23,7 +23,7 @@ const EditableParameterInput = ({
 
   const handleBlur = () => {
     let numericValue = parseFloat(displayValue);
-    if (isNaN(numericValue) || numericValue < 0) numericValue = 0;
+    if (isNaN(numericValue) || numericValue < 0) numericValue = rawValue;
     onValueChange(numericValue);
     setDisplayValue(numericValue.toFixed(2));
   };

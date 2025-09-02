@@ -7,13 +7,14 @@ import react from "@vitejs/plugin-react-swc";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  base:  "/react-modular-app/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
   test: {
-    include: ['**/*.test.tsx', "**/*.tests.tsx'"],
+    include: ['**/*.test.tsx', "**/*.test.ts"],
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',

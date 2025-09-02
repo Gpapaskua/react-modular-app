@@ -21,6 +21,7 @@ const AppRoutes = () => {
             <Route path='reuse' element={ <ComingSoonPage />} />
         </Route>
       </Route>
+      <Route path="*" element={<Navigate to="/inputs" replace />} />
     </Routes>
   );
 };

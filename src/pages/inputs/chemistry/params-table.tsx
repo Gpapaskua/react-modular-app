@@ -4,14 +4,22 @@ import { TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { PlusCircle } from "lucide-react";
 import type { IParameter } from "./types";
 import DataTable from "@/components/ui/data-table";
+import { Button } from "@/components/ui/button";
 
 interface IParamsTable {
+  groupId: string;
   data: IParameter[];
-  onUpdateParam: (rowValue: unknown, columnId: string, value: unknown) => void;
-  onAddNewParam: () => void;
+  onUpdateParam: (params: {
+    groupId: string;
+    parameter: unknown;
+    columnId: string;
+    columnValue: unknown;
+  }) => void;
+  onAddNewParam: (groupId: string) => void;
 }
 
 export default function ParamsTable({
+  groupId,
   data,
   onUpdateParam,
   onAddNewParam,
@@ -19,12 +27,21 @@ export default function ParamsTable({
   const options = useMemo(
     () => ({
       meta: {
-        updateParamValue: onUpdateParam,
+        updateParamValue: (
+          parameter: unknown,
+          columnId: string,
+          columnValue: unknown
+        ) =>
+          onUpdateParam({
+            groupId,
+            parameter,
+            columnId,
+            columnValue,
+          }),
       },
     }),
-    [onUpdateParam]
+    [onUpdateParam, groupId]
   );
-  console.log({ data })
   const renderFooter = useCallback(
     () => (
       <TableFooter>
@@ -34,18 +51,18 @@ export default function ParamsTable({
               <span className="text-sm font-medium text-gray-600">
                 Additional Effluent Parameters
               </span>
-              <button
-                onClick={onAddNewParam}
-                className="flex cursor-pointer items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 font-semibold transition-colors rounded-md p-2 -m-2"
+              <Button
+                variant='outline'
+                onClick={() => onAddNewParam(groupId)}
               >
                 <PlusCircle className="h-5 w-5" />
-              </button>
+              </Button>
             </div>
           </TableCell>
         </TableRow>
       </TableFooter>
     ),
-    [onAddNewParam]
+    [onAddNewParam, groupId]
   );
   return (
     <div className="p-8 bg-gray-50">

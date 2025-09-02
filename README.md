@@ -44,7 +44,7 @@ Follow these instructions to get the project up and running on your local machin
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/Gpapaskua/react-modular-app.git](https://github.com/Gpapaskua/react-modular-app.git)
+git clone https://github.com/Gpapaskua/react-modular-app.git
 cd react-modular-app
 ```
 
@@ -60,15 +60,7 @@ npm install
 
 ```
 
-### 3. Set Up Environment Variables
-
-Create a local environment file by copying the example file.
-
-```bash
-cp .env.example .env
-```
-
-### 4. Run the Development Server
+### 3. Run the Development Server
 
 # Using npm
 

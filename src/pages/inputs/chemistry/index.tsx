@@ -6,22 +6,19 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { PencilIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useReducer } from "react";
 import ParamsTable from "./params-table";
 import EditDescriptionDialog from "./edit-description-dialog";
 import EditNameDialog from "./edit-name-dialog";
-import type { IGroup, IParameter } from "./types";
+import type { IParameter } from "./types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getChemistryData, updateGroupParam } from "./api";
 import AddParameterDialog from "./add-parameter-dialog";
 import { useSidebar } from "@/components/ui/sidebar";
+import { initialState, reducer } from "./reducer";
 
-interface IGroupToEdit {
-  type: "name" | "description" | "new-param";
-  group: IGroup;
-}
 export default function ChemistryPage() {
-  const [groupToEdit, setGroupToEdit] = useState<IGroupToEdit | null>(null);
+  const [modalState, dispatch] = useReducer(reducer, initialState);
   const { toggleSidebar } = useSidebar();
 
   const client = useQueryClient();
@@ -39,30 +36,36 @@ export default function ChemistryPage() {
     },
   });
 
-  const handleOpenNewParamDialog = useCallback(
-    (group: IGroup) => () => {
-      setGroupToEdit({ group, type: "new-param" });
-    },
-    []
-  );
+  const handleOpenNewParamDialog = useCallback((groupId: string) => {
+    dispatch({ type: "OPEN_ADD_PARAMETER_MODAL", groupId });
+  }, []);
 
   const handleUpdateParamValue = useCallback(
-    (groupId: string) =>
-      (column: unknown, paramKey: string, value: unknown) => {
-        updateParam({
-          groupId,
-          paramId: (column as IParameter).id,
-          payload: {
-            [paramKey]: value,
-          },
-        });
-      },
+    ({
+      groupId,
+      parameter,
+      columnId,
+      columnValue,
+    }: {
+      groupId: string;
+      parameter: unknown;
+      columnId: string;
+      columnValue: unknown;
+    }) => {
+      updateParam({
+        groupId,
+        paramId: (parameter as IParameter).id,
+        payload: {
+          [columnId]: columnValue,
+        },
+      });
+    },
     [updateParam]
   );
 
   return (
     <>
-      <div className="flex sm:hidden">
+      <div className="flex md:hidden">
         <Button onClick={toggleSidebar}>Units</Button>
       </div>
       <Accordion type="multiple" className="w-full space-y-4">
@@ -81,9 +84,10 @@ export default function ChemistryPage() {
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setGroupToEdit({
-                        type: "name",
-                        group,
+                      dispatch({
+                        type: "OPEN_EDIT_NAME_MODAL",
+                        groupId: group.id,
+                        name: group.name,
                       });
                     }}
                     variant="secondary"
@@ -101,9 +105,10 @@ export default function ChemistryPage() {
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setGroupToEdit({
-                        type: "description",
-                        group,
+                      dispatch({
+                        type: "OPEN_EDIT_DESCRIPTION_MODAL",
+                        groupId: group.id,
+                        description: group.description,
                       });
                     }}
                     variant="secondary"
@@ -118,36 +123,36 @@ export default function ChemistryPage() {
             <AccordionContent className="px-4 pb-4">
               <div className="border-t border-gray-200 pt-4">
                 <ParamsTable
+                  groupId={group.id}
                   data={group.parameters}
-                  onAddNewParam={handleOpenNewParamDialog(group)}
-                  onUpdateParam={handleUpdateParamValue(group.id)}
+                  onAddNewParam={handleOpenNewParamDialog}
+                  onUpdateParam={handleUpdateParamValue}
                 />
               </div>
             </AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
-      {!!groupToEdit && (
-        <>
-          <EditDescriptionDialog
-            open={groupToEdit?.type === "description"}
-            description={groupToEdit?.group?.description ?? ""}
-            groupId={groupToEdit.group.id}
-            onClose={() => setGroupToEdit(null)}
-          />
-          <EditNameDialog
-            open={groupToEdit?.type === "name"}
-            name={groupToEdit?.group?.name ?? ""}
-            groupId={groupToEdit.group.id}
-            onClose={() => setGroupToEdit(null)}
-          />
-          <AddParameterDialog
-            onClose={() => setGroupToEdit(null)}
-            open={groupToEdit?.type === "new-param"}
-            groupId={groupToEdit.group.id}
-          />
-        </>
-      )}
+      <EditDescriptionDialog
+        key={`description-${modalState.editDescriptionModal.groupId}`}
+        open={modalState.editDescriptionModal.isOpen}
+        description={modalState.editDescriptionModal.description}
+        groupId={modalState.editDescriptionModal.groupId}
+        onClose={() => dispatch({ type: "CLOSE_EDIT_DESCRIPTION_MODAL" })}
+      />
+      <EditNameDialog
+        key={`name-${modalState.editNameModal.groupId}`}
+        open={modalState.editNameModal.isOpen}
+        name={modalState.editNameModal.name}
+        groupId={modalState.editNameModal.groupId}
+        onClose={() => dispatch({ type: "CLOSE_EDIT_NAME_MODAL" })}
+      />
+      <AddParameterDialog
+        key={`param-${modalState.addParameterModal.groupId}`}
+        onClose={() => dispatch({ type: "CLOSE_ADD_PARAMETER_MODAL" })}
+        open={modalState.addParameterModal.isOpen}
+        groupId={modalState.addParameterModal.groupId}
+      />
     </>
   );
 }
